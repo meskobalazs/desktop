@@ -153,6 +153,7 @@ void Systray::slotNewUserSelected()
     if (_trayEngine) {
         // Change ActivityModel
         _trayEngine->rootContext()->setContextProperty("activityModel", UserModel::instance()->currentActivityModel());
+        _trayEngine->rootContext()->setContextProperty("unifiedSearchResultsModel", UserModel::instance()->currentUnifiedSearchResultsModel());
     }
 
     // Rebuild App list

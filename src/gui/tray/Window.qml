@@ -706,8 +706,6 @@ Window {
                 id: unifiedSearchResultsListViewScrollbar
             }
 
-            readonly property int maxActionButtons: 2
-
             keyNavigationEnabled: true
 
             Accessible.role: Accessible.List
@@ -715,10 +713,9 @@ Window {
 
             model: unifiedSearchResultsModel
 
-            delegate: ActivityItem {
-                width: activityListView.width
+            delegate: UnifiedSearchResultItem {
+                width: unifiedSearchResultsListView.width
                 height: Style.trayWindowHeaderHeight
-                onClicked: activityModel.triggerDefaultAction(model.index)
             }
         }
     }       // Rectangle trayWindowBackground

@@ -41,7 +41,13 @@ QVariant UnifiedSearchResultsListModel::data(const QModelIndex &index, int role)
 
 int UnifiedSearchResultsListModel::rowCount(const QModelIndex &) const
 {
-    return 0;
+    int total = 0;
+
+    for (const auto &category : _resultsByCategory) {
+        total += category._results.size();
+    }
+
+    return total;
 }
 
 void UnifiedSearchResultsListModel::setSearchTerm(const QString &term)
@@ -62,6 +68,10 @@ void UnifiedSearchResultsListModel::setSearchTerm(const QString &term)
         _unifiedSearchTextEditingFinishedTimer.setInterval(400);
         connect(&_unifiedSearchTextEditingFinishedTimer, &QTimer::timeout, this, &UnifiedSearchResultsListModel::slotSearchTermEditingFinished);
         _unifiedSearchTextEditingFinishedTimer.start();
+    } else {
+        beginResetModel();
+        _resultsByCategory.clear();
+        endResetModel();
     }
 }
 
@@ -103,7 +113,9 @@ void UnifiedSearchResultsListModel::slotSearchTermEditingFinished()
 
 void UnifiedSearchResultsListModel::startSearch()
 {
+    beginResetModel();
     _resultsByCategory.clear();
+    endResetModel();
 
     for (const auto& provider : _providers) {
         startSearchForProvider(provider);
@@ -136,7 +148,9 @@ void UnifiedSearchResultsListModel::startSearchForProvider(const Provider &provi
                     category._results.push_back(result);
                 }
 
+                beginInsertRows(QModelIndex(), 0, category._results.size() - 1);
                 _resultsByCategory.push_back(category);
+                endInsertRows();
             }
         }
     });
