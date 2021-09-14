@@ -198,7 +198,7 @@ void ShareLinkWidget::setupUiOptions()
 
     } else {
         checked = (perm == SharePermissionRead);
-        _readOnlyLinkAction = permissionsGroup->addAction(tr("Read only"));
+        _readOnlyLinkAction = permissionsGroup->addAction(tr("View only"));
         _readOnlyLinkAction->setCheckable(true);
         _readOnlyLinkAction->setChecked(checked);
 
