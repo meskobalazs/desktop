@@ -668,6 +668,7 @@ Window {
 
         ListView {
             id: activityListView
+            visible: !unifiedSearchResultsListView.visible
             anchors.top: trayWindowUnifiedSearchContainer.bottom
             anchors.left: trayWindowBackground.left
             anchors.right: trayWindowBackground.right
@@ -685,6 +686,34 @@ Window {
             Accessible.name: qsTr("Activity list")
 
             model: activityModel
+
+            delegate: ActivityItem {
+                width: activityListView.width
+                height: Style.trayWindowHeaderHeight
+                onClicked: activityModel.triggerDefaultAction(model.index)
+            }
+        }
+
+        ListView {
+            id: unifiedSearchResultsListView
+            anchors.top: trayWindowUnifiedSearchContainer.bottom
+            anchors.left: trayWindowBackground.left
+            anchors.right: trayWindowBackground.right
+            anchors.bottom: trayWindowBackground.bottom
+            visible: model.length > 0
+            clip: true
+            ScrollBar.vertical: ScrollBar {
+                id: unifiedSearchResultsListViewScrollbar
+            }
+
+            readonly property int maxActionButtons: 2
+
+            keyNavigationEnabled: true
+
+            Accessible.role: Accessible.List
+            Accessible.name: qsTr("Unified search results list")
+
+            model: unifiedSearchResultsModel
 
             delegate: ActivityItem {
                 width: activityListView.width
