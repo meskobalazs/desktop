@@ -32,23 +32,24 @@ cd qtkeychain
 git checkout v0.10.0
 mkdir build
 cd build
-cmake -D CMAKE_INSTALL_PREFIX=/app/usr ..
-make -j$(nproc)
-make -j$(nproc) install
+cmake -G Ninja -D CMAKE_INSTALL_PREFIX=/app/usr ..
+cmake --build . --target all
+cmake --build . --target install
 
 
 # Build client
 mkdir build-client
 cd build-client
 cmake \
+    -G Ninja \
     -D CMAKE_INSTALL_PREFIX=/app/usr \
     -D BUILD_TESTING=OFF \
     -D BUILD_UPDATER=$BUILD_UPDATER \
     -D MIRALL_VERSION_BUILD=$BUILDNR \
     -D MIRALL_VERSION_SUFFIX="$VERSION_SUFFIX" \
     ${DESKTOP_CLIENT_ROOT}
-make -j$(nproc)
-make -j$(nproc) install
+cmake --build . --target all
+cmake --build . --target install
 
 # Move stuff around
 cd /app
