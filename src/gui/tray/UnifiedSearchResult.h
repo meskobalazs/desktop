@@ -27,10 +27,21 @@ class UnifiedSearchResult
 {
     Q_GADGET
 
-    Q_PROPERTY(QString title MEMBER _title)
+    Q_PROPERTY(QString resultTitle MEMBER _title)
+    Q_PROPERTY(QString categoryName MEMBER _categoryName)
+    Q_PROPERTY(QString subline MEMBER _subline)
+    Q_PROPERTY(QUrl thumbnailUrl MEMBER _thumbnailUrl)
+    Q_PROPERTY(bool isFetchMoreTrigger MEMBER _isFetchMoreTrigger)
 
 public:
     QString _title;
+    QString _subline;
+    QString _categoryId;
+    QString _categoryName;
+    qint32 _order = INT32_MAX;
+    QUrl _thumbnailUrl;
+    QUrl _resourceUrl;
+    bool _isFetchMoreTrigger = false;
 };
 
 bool operator==(const UnifiedSearchResult &rhs, const UnifiedSearchResult &lhs);

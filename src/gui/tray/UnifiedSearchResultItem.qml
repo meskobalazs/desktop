@@ -24,10 +24,11 @@ MouseArea {
         
         Accessible.role: Accessible.ListItem
         Accessible.name: title
-        Accessible.onPressAction: unifiedSearchResultMouseArea.clicked()   
-        
+        Accessible.onPressAction: unifiedSearchResultMouseArea.clicked()
+
         Column {
-            id: unifiedSearchResultTextColumn
+            id: unifiedSearchResultTextFetchMoreColumn
+            visible: isFetchMoreTrigger
             Layout.leftMargin: 8
             Layout.topMargin: 4
             Layout.bottomMargin: 4
@@ -37,12 +38,72 @@ MouseArea {
             Layout.alignment: Qt.AlignLeft
             
             Text {
-                id: activityTextTitle
-                text: name + " " + subject
+                id: unifiedSearchResultTextFetchMore
+                text: "Fetch more..."
                 width: parent.width
                 elide: Text.ElideRight
                 font.pixelSize: Style.topLinePixelSize
                 color: "black"
+            }
+        }
+
+        Column {
+            id: unifiedSearchResultTextCategoryNameColumn
+            Layout.leftMargin: 8
+            Layout.topMargin: 4
+            Layout.bottomMargin: 4
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            spacing: 4
+            Layout.alignment: Qt.AlignLeft
+            
+            Text {
+                id: unifiedSearchResultTextCategoryName
+                text: categoryName
+                width: parent.width
+                elide: Text.ElideRight
+                font.pixelSize: Style.topLinePixelSize
+                color: "red"
+            }
+        }
+        
+        Column {
+            id: unifiedSearchResultTextNameColumn
+            Layout.leftMargin: 8
+            Layout.topMargin: 4
+            Layout.bottomMargin: 4
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            spacing: 4
+            Layout.alignment: Qt.AlignLeft
+            
+            Text {
+                id: unifiedSearchResultTextName
+                text: resultTitle
+                width: parent.width
+                elide: Text.ElideRight
+                font.pixelSize: Style.topLinePixelSize
+                color: "black"
+            }
+        }
+
+        Column {
+            id: unifiedSearchResultTextSublineColumn
+            Layout.leftMargin: 8
+            Layout.topMargin: 4
+            Layout.bottomMargin: 4
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            spacing: 4
+            Layout.alignment: Qt.AlignLeft
+            
+            Text {
+                id: unifiedSearchResultTextSubline
+                text: subline
+                width: parent.width
+                elide: Text.ElideRight
+                font.pixelSize: Style.topLinePixelSize
+                color: "grey"
             }
         }
     }
