@@ -28,6 +28,33 @@ UnifiedSearchResultsListModel::UnifiedSearchResultsListModel(AccountState *accou
     : QAbstractListModel(parent)
     , _accountState(accountState)
 {
+    beginInsertRows(QModelIndex(), 0, 3);
+    UnifiedSearchResult fakeFileResult;
+    fakeFileResult._title = "Fake file result";
+    fakeFileResult._subline = "Subline for Fake file result";
+    fakeFileResult._categoryId = "files";
+    fakeFileResult._categoryName = "Files";
+
+    UnifiedSearchResult fetchMoreFileResultsTrigger;
+    fetchMoreFileResultsTrigger._categoryId = "files";
+    fetchMoreFileResultsTrigger._isFetchMoreTrigger = true;
+
+    _resultsCombined.push_back(fakeFileResult);
+    _resultsCombined.push_back(fetchMoreFileResultsTrigger);
+
+    UnifiedSearchResult fakeTalkMessagesResult;
+    fakeTalkMessagesResult._title = "Fake Talk messages result";
+    fakeTalkMessagesResult._subline = "Subline for Fake Talk messages result";
+    fakeTalkMessagesResult._categoryId = "talk_messages";
+    fakeTalkMessagesResult._categoryName = "Messages";
+
+    UnifiedSearchResult fetchMoreTalkMessagesTrigger;
+    fetchMoreTalkMessagesTrigger._categoryId = "talk_messages";
+    fetchMoreTalkMessagesTrigger._isFetchMoreTrigger = true;
+
+    _resultsCombined.push_back(fakeTalkMessagesResult);
+    _resultsCombined.push_back(fetchMoreTalkMessagesTrigger);
+    endInsertRows();
 }
 
 UnifiedSearchResultsListModel::~UnifiedSearchResultsListModel()
@@ -46,11 +73,17 @@ QVariant UnifiedSearchResultsListModel::data(const QModelIndex &index, int role)
     case CategoryNameRole: {
         return _resultsCombined.at(index.row())._categoryName;
     }
-    case NameRole: {
+    case TitleRole: {
         return _resultsCombined.at(index.row())._title;
     }
-    case Subline: {
+    case SublineRole: {
         return _resultsCombined.at(index.row())._subline;
+    }
+    case ThumbnailUrlRole: {
+        return _resultsCombined.at(index.row())._thumbnailUrl;
+    }
+    case IsFetchMoreTrigger: {
+        return _resultsCombined.at(index.row())._isFetchMoreTrigger;
     }
     }
 
@@ -66,8 +99,10 @@ QHash<int, QByteArray> UnifiedSearchResultsListModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
     roles[CategoryNameRole] = "categoryName";
-    roles[NameRole] = "resultTitle";
-    roles[Subline] = "subline";
+    roles[TitleRole] = "resultTitle";
+    roles[SublineRole] = "subline";
+    roles[ThumbnailUrlRole] = "thumbnailUrl";
+    roles[IsFetchMoreTrigger] = "isFetchMoreTrigger";
     return roles;
 }
 
@@ -92,6 +127,7 @@ void UnifiedSearchResultsListModel::setSearchTerm(const QString &term)
     } else {
         beginResetModel();
         _resultsByCategory.clear();
+        _resultsCombined.clear();
         endResetModel();
     }
 }
@@ -172,8 +208,8 @@ void UnifiedSearchResultsListModel::startSearchForProvider(const UnifiedSearchPr
                     result._order = category._order;
                     result._title = entry.toMap()["title"].toString();
                     result._subline = entry.toMap()["subline"].toString();
-                    result._resourceUrl = entry.toMap()["resourceUrl"].toUrl();
-                    result._thumbnailUrl = entry.toMap()["thumbnailUrl"].toUrl();
+                    result._resourceUrl = entry.toMap()["resourceUrl"].toString();
+                    result._thumbnailUrl = entry.toMap()["thumbnailUrl"].toString();
                     category._results.push_back(result);
                 }
 

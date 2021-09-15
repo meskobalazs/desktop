@@ -45,8 +45,10 @@ class UnifiedSearchResultsListModel : public QAbstractListModel
 public:
     enum DataRole {
         CategoryNameRole = Qt::UserRole + 1,
-        NameRole,
-        Subline
+        TitleRole,
+        SublineRole,
+        ThumbnailUrlRole,
+        IsFetchMoreTrigger
     };
 
     explicit UnifiedSearchResultsListModel(AccountState *accountState, QObject *parent = nullptr);
