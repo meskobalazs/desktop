@@ -28,7 +28,13 @@ UnifiedSearchResultsListModel::UnifiedSearchResultsListModel(AccountState *accou
     : QAbstractListModel(parent)
     , _accountState(accountState)
 {
-    beginInsertRows(QModelIndex(), 0, 3);
+    beginInsertRows(QModelIndex(), 0, 5);
+    UnifiedSearchResult filesCategorySeparator;
+    filesCategorySeparator._categoryId = "files";
+    filesCategorySeparator._categoryName = "Files";
+    filesCategorySeparator._isCategorySeparator = true;
+    _resultsCombined.push_back(filesCategorySeparator);
+
     UnifiedSearchResult fakeFileResult;
     fakeFileResult._title = "Fake file result";
     fakeFileResult._subline = "Subline for Fake file result";
@@ -41,6 +47,12 @@ UnifiedSearchResultsListModel::UnifiedSearchResultsListModel(AccountState *accou
 
     _resultsCombined.push_back(fakeFileResult);
     _resultsCombined.push_back(fetchMoreFileResultsTrigger);
+
+    UnifiedSearchResult talkMessagesCategorySeparator;
+    talkMessagesCategorySeparator._categoryId = "talk_messages";
+    talkMessagesCategorySeparator._categoryName = "Messages";
+    talkMessagesCategorySeparator._isCategorySeparator = true;
+    _resultsCombined.push_back(talkMessagesCategorySeparator);
 
     UnifiedSearchResult fakeTalkMessagesResult;
     fakeTalkMessagesResult._title = "Fake Talk messages result";
@@ -85,6 +97,9 @@ QVariant UnifiedSearchResultsListModel::data(const QModelIndex &index, int role)
     case IsFetchMoreTrigger: {
         return _resultsCombined.at(index.row())._isFetchMoreTrigger;
     }
+    case IsCategorySeparator: {
+        return _resultsCombined.at(index.row())._isCategorySeparator;
+    }
     }
 
     return QVariant();
@@ -103,6 +118,7 @@ QHash<int, QByteArray> UnifiedSearchResultsListModel::roleNames() const
     roles[SublineRole] = "subline";
     roles[ThumbnailUrlRole] = "thumbnailUrl";
     roles[IsFetchMoreTrigger] = "isFetchMoreTrigger";
+    roles[IsCategorySeparator] = "isCategorySeparator";
     return roles;
 }
 
@@ -225,11 +241,22 @@ void UnifiedSearchResultsListModel::combineResults()
 {
     QList<UnifiedSearchResult> resultsCombined;
     for (const auto &category : _resultsByCategory) {
+        if (category._results.isEmpty()) {
+            continue;
+        }
+        UnifiedSearchResult categorySeparator;
+        categorySeparator._categoryId = category._id;
+        categorySeparator._categoryName = category._name;
+        categorySeparator._isCategorySeparator = true;
+        resultsCombined.push_back(categorySeparator);
+
         resultsCombined.append(category._results);
+
         UnifiedSearchResult fetchMoreTrigger;
         fetchMoreTrigger._categoryId = category._id;
         fetchMoreTrigger._categoryName = category._name;
         fetchMoreTrigger._isFetchMoreTrigger = true;
+        resultsCombined.push_back(fetchMoreTrigger);
     }
     beginInsertRows(QModelIndex(), 0, resultsCombined.size() - 1);
     _resultsCombined = resultsCombined;

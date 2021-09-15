@@ -32,6 +32,7 @@ class UnifiedSearchResult
     Q_PROPERTY(QString subline MEMBER _subline)
     Q_PROPERTY(QString thumbnailUrl MEMBER _thumbnailUrl)
     Q_PROPERTY(bool isFetchMoreTrigger MEMBER _isFetchMoreTrigger)
+    Q_PROPERTY(bool isCategorySeparator MEMBER _isCategorySeparator)
 
 public:
     QString _title;
@@ -42,6 +43,7 @@ public:
     QString _thumbnailUrl;
     QString _resourceUrl;
     bool _isFetchMoreTrigger = false;
+    bool _isCategorySeparator = false;
 };
 
 bool operator==(const UnifiedSearchResult &rhs, const UnifiedSearchResult &lhs);

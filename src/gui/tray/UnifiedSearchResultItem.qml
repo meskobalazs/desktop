@@ -22,10 +22,10 @@ MouseArea {
         RowLayout {
             id: unifiedSearchResultItemDetails
 
-            visible: !model.isFetchMoreTrigger
+            visible: !model.isFetchMoreTrigger && !model.isCategorySeparator
 
-            width: !model.isFetchMoreTrigger ? unifiedSearchResultMouseArea.width : 0
-            height: !model.isFetchMoreTrigger ? Style.trayWindowHeaderHeight : 0
+            width: !model.isFetchMoreTrigger && !model.isCategorySeparator ? unifiedSearchResultMouseArea.width : 0
+            height: !model.isFetchMoreTrigger && !model.isCategorySeparator ? Style.trayWindowHeaderHeight : 0
 
             Accessible.role: Accessible.ListItem
             Accessible.name: resultTitle
@@ -124,6 +124,40 @@ MouseArea {
                     width: parent.width
                     font.pixelSize: Style.topLinePixelSize
                     color: "grey"
+                }
+            }
+        }
+
+        RowLayout {
+            id: unifiedSearchResultItemCategorySeparator
+            visible: model.isCategorySeparator
+
+            width: model.isCategorySeparator ? unifiedSearchResultMouseArea.width : 0
+            height: model.isCategorySeparator ? Style.trayWindowHeaderHeight : 0
+            spacing: 2
+
+            Accessible.role: Accessible.ListItem
+            Accessible.name: "Category separator."
+            Accessible.onPressAction: unifiedSearchResultMouseArea.clicked()
+
+            Column {
+                id: unifiedSearchResultItemCategorySeparatorColumn
+                visible: model.isCategorySeparator
+                Layout.leftMargin: 8
+                Layout.topMargin: 4
+                Layout.bottomMargin: 4
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                spacing: 4
+                Layout.alignment: Qt.AlignLeft
+
+                Text {
+                    id: unifiedSearchResultItemCategorySeparatorText
+                    text: model.categoryName
+                    visible: parent.visible
+                    width: parent.width
+                    font.pixelSize: Style.topLinePixelSize
+                    color: "blue"
                 }
             }
         }
