@@ -31,7 +31,7 @@ class IconJob : public QObject
 {
     Q_OBJECT
 public:
-    explicit IconJob(const QUrl &url, QObject *parent = nullptr);
+    explicit IconJob(const QUrl &url, QSharedPointer<QNetworkAccessManager> accessManager = nullptr, QObject *parent = nullptr);
 
 signals:
     void jobFinished(QByteArray iconData);
@@ -40,7 +40,7 @@ private slots:
     void finished(QNetworkReply *reply);
 
 private:
-    QNetworkAccessManager _accessManager;
+    QSharedPointer<QNetworkAccessManager> _accessManager;
 };
 }
 
