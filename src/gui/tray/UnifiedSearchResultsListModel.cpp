@@ -181,7 +181,7 @@ void UnifiedSearchResultsListModel::resultClicked(int resultIndex)
                 // Load more items
                 const auto providerFound = _providers.find(categoryInfo._name);
                 if (providerFound != _providers.end()) {
-                    startSearchForProvider(*providerFound, categoryInfo._cursor * 2);
+                    startSearchForProvider(*providerFound, categoryInfo._cursor);
                 }
             }
         } else {
@@ -242,12 +242,13 @@ void UnifiedSearchResultsListModel::startSearchForProvider(const UnifiedSearchPr
     QUrlQuery params;
     params.addQueryItem(QStringLiteral("term"), searchTerm());
     if (cursor > 0) {
-        params.addQueryItem("cursor", QString(cursor));
+        params.addQueryItem("cursor", QString::number(cursor));
     }
     job->addQueryParams(params);
     QObject::connect(job, &JsonApiJob::jsonReceived, [&, provider](const QJsonDocument &json) {
         const auto data = json.object().value("ocs").toObject().value("data").toObject();
         if (!data.isEmpty()) {
+            const auto dataMap = data.toVariantMap();
             const auto name = data.value("name").toString();
             const auto providerForResults = _providers.find(name);
             const auto isPaginated = data.value("isPaginated").toBool();
@@ -296,11 +297,13 @@ void UnifiedSearchResultsListModel::combineResults()
 
         resultsCombined.append(category._results);
 
-        UnifiedSearchResult fetchMoreTrigger;
-        fetchMoreTrigger._categoryId = category._id;
-        fetchMoreTrigger._categoryName = category._name;
-        fetchMoreTrigger._isFetchMoreTrigger = true;
-        resultsCombined.push_back(fetchMoreTrigger);
+        if (category._cursor > 0) {
+            UnifiedSearchResult fetchMoreTrigger;
+            fetchMoreTrigger._categoryId = category._id;
+            fetchMoreTrigger._categoryName = category._name;
+            fetchMoreTrigger._isFetchMoreTrigger = true;
+            resultsCombined.push_back(fetchMoreTrigger);
+        }
     }
     beginResetModel();
     _resultsCombined.clear();
