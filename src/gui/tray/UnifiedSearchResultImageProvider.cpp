@@ -50,12 +50,15 @@ public:
         auto image = QImage(16, 16, QImage::Format_ARGB32);
 
         QEventLoop loop;
-        auto *iconJob = new IconJob(iconUrl, _account ? _account->sharedNetworkAccessManager() : nullptr);
-        connect(iconJob, &IconJob::jobFinished, this, [&loop, &image](const QByteArray data) {
-            image = QImage::fromData(data);
-            bool isValid = !image.isNull();
+        auto *iconJob = new IconJob(_account, iconUrl, this);
+        connect(iconJob, &IconJob::jobFinished, this, [&loop, &image](int statusCode, const QByteArray reply) {
+            if (statusCode == 200) {
+                image = QImage::fromData(reply);
+                bool isValid = !image.isNull();
+            }
             loop.quit();
         });
+        iconJob->start();
         loop.exec();
         emit done(image);
     }
@@ -81,6 +84,9 @@ public:
     void init(const QString &id, const QSize &requestedSize, QThreadPool *pool)
     {
         auto runnable = new AsyncImageResponseRunnable(id, requestedSize);
+        if (_account) {
+            runnable->setAccount(_account);
+        }
         connect(runnable, &AsyncImageResponseRunnable::done, this, &AsyncImageResponse::handleDone);
         pool->start(runnable);
     }

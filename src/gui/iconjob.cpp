@@ -16,32 +16,21 @@
 
 namespace OCC {
 
-IconJob::IconJob(const QUrl &url, QSharedPointer<QNetworkAccessManager> accessManager, QObject *parent)
-    : QObject(parent)
-    , _accessManager(accessManager)
+IconJob::IconJob(AccountPtr account, const QUrl &url, QObject *parent)
+    : AbstractNetworkJob(account, QString(), parent)
+    , _iconUrl(url)
 {
-    if (!_accessManager) {
-        _accessManager.reset(new QNetworkAccessManager);
-    }
-
-    connect(_accessManager.data(), &QNetworkAccessManager::finished,
-            this, &IconJob::finished);
-
-    QNetworkRequest request(url);
-#if (QT_VERSION >= 0x050600)
-    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-#endif
-    _accessManager->get(request);
 }
 
-void IconJob::finished(QNetworkReply *reply)
+void IconJob::start()
 {
-    auto err = reply->error();
-    if (err != QNetworkReply::NoError)
-        return;
+    sendRequest("GET", _iconUrl);
+    AbstractNetworkJob::start();
+}
 
-    reply->deleteLater();
-    deleteLater();
-    emit jobFinished(reply->readAll());
+bool IconJob::finished()
+{
+    emit jobFinished(reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(), reply()->readAll());
+    return true;
 }
 }
