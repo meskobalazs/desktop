@@ -151,6 +151,8 @@ public:
      */
     QUrl statusInvisibleImageSource() const;
 
+    QUrl syncStatusOk() const;
+
     /**
      * @brief configFileName
      * @return the name of the config file.

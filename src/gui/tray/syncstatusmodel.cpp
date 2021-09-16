@@ -1,6 +1,8 @@
 #include "syncstatusmodel.h"
 #include "folderman.h"
 #include "navigationpanehelper.h"
+#include "syncresult.h"
+#include "theme.h"
 #include <qnamespace.h>
 
 namespace OCC {
@@ -21,6 +23,16 @@ SyncStatusModel::SyncStatusModel(QObject *parent)
 double SyncStatusModel::syncProgress() const
 {
     return _progress;
+}
+
+QUrl SyncStatusModel::syncIcon() const
+{
+    return Theme::instance()->syncStatusOk();
+}
+
+bool SyncStatusModel::syncing() const
+{
+    return _isSyncing;
 }
 
 void SyncStatusModel::onFolderListChanged(const OCC::Folder::Map &folderMap)
@@ -53,6 +65,18 @@ void SyncStatusModel::onFolderProgressInfo(const ProgressInfo &progress)
 
     _progress = result;
     emit syncProgressChanged();
+
+    setSyncing(overallPercent != 100 && overallPercent != 0);
+}
+
+void SyncStatusModel::setSyncing(bool value)
+{
+    if (value == _isSyncing) {
+        return;
+    }
+
+    _isSyncing = value;
+    emit syncingChanged();
 }
 }
 
