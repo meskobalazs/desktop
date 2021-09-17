@@ -164,6 +164,16 @@ QUrl Theme::syncStatusOk() const
     return imagePathToUrl(themeImagePath("state-ok", 16));
 }
 
+QUrl Theme::syncStatusError() const
+{
+    return imagePathToUrl(themeImagePath("state-error", 16));
+}
+
+QUrl Theme::syncStatusRunning() const
+{
+    return imagePathToUrl(themeImagePath("state-sync", 16));
+}
+
 QString Theme::version() const
 {
     return MIRALL_VERSION_STRING;

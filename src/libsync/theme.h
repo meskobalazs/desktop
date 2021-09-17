@@ -153,6 +153,10 @@ public:
 
     QUrl syncStatusOk() const;
 
+    QUrl syncStatusError() const;
+
+    QUrl syncStatusRunning() const;
+
     /**
      * @brief configFileName
      * @return the name of the config file.

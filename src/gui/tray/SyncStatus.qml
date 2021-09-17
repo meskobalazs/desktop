@@ -24,14 +24,23 @@ Item {
         }
 
         ColumnLayout {
-
-            Text {}
             
+            Text {
+                Layout.margins: 8
+                text: model.syncStatusString
+            }
+
             ProgressBar {
                 Layout.margins: 8
                 Layout.fillWidth: true
 
                 value: model.syncProgress
+                visible: model.syncing
+            }
+
+            Text {
+                Layout.margins: 8
+                text: model.syncString
                 visible: model.syncing
             }
 
