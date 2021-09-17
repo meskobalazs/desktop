@@ -37,8 +37,8 @@ UnifiedSearchResultsListModel::UnifiedSearchResultsListModel(AccountState *accou
     _resultsCombined.push_back(filesCategorySeparator);
 
     UnifiedSearchResult fakeFileResult;
-    fakeFileResult._title = "Fake file result";
-    fakeFileResult._subline = "Subline for Fake file result";
+    fakeFileResult._title = "Long long long Fake file result Long long long Long long long Fake file result Long long long Long long long Fake file result Long long long";
+    fakeFileResult._subline = "Subline for Fake Long long long file result for Fake Long long long file result for Fake Long long long file result for Fake Long long long file result";
     fakeFileResult._categoryId = "files";
     fakeFileResult._categoryName = "Files";
 
@@ -57,7 +57,7 @@ UnifiedSearchResultsListModel::UnifiedSearchResultsListModel(AccountState *accou
 
     UnifiedSearchResult fakeTalkMessagesResult;
     fakeTalkMessagesResult._title = "Fake Talk messages result";
-    fakeTalkMessagesResult._subline = "Subline for Fake Talk messages result";
+    fakeTalkMessagesResult._subline = "Long long long Subline for Fake Talk messages result. Long long long Subline for Fake Talk messages result.";
     fakeTalkMessagesResult._categoryId = "talk_messages";
     fakeTalkMessagesResult._categoryName = "Messages";
 
