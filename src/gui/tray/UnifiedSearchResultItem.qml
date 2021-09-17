@@ -4,7 +4,7 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.2
 import Style 1.0
 import com.nextcloud.desktopclient 1.0
-
+import QtGraphicalEffects 1.0
 MouseArea {
     id: unifiedSearchResultMouseArea
     enabled: !model.isCategorySeparator
@@ -22,8 +22,9 @@ MouseArea {
 
         visible: !model.isFetchMoreTrigger && !model.isCategorySeparator
 
-        width: visible ? unifiedSearchResultMouseArea.width : 0
-        height: visible ? Style.trayWindowHeaderHeight : 0
+        anchors.fill: parent
+        anchors.leftMargin: 8
+        anchors.rightMargin: 8
 
         spacing: 0
 
@@ -33,72 +34,83 @@ MouseArea {
 
         ColumnLayout {
             id: unifiedSearchResultLeftColumn
+            visible: model.thumbnailUrl || model.thumbnailUrlLocal
             Layout.preferredWidth: visible ? Layout.preferredHeight : 0
-            Layout.preferredHeight: visible ? previewThumbnailHeight : 0
-            visible: model.thumbnailUrl
+            Layout.preferredHeight: visible ? Style.trayWindowHeaderHeight : 0
             Image {
                 id: unifiedSearchResultThumbnail
+                property bool rounded: true
+                    property bool adapt: true
                 visible: !unifiedSearchResultThumbnailPlaceholder.visible
                 Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
                 verticalAlignment: Qt.AlignCenter
                 asynchronous: true
                 cache: true
-                source: "image://unified-search-result-image/" + model.thumbnailUrl
-                sourceSize.width: sourceSize.height
-                sourceSize.height: previewThumbnailHeight
+                source: model.thumbnailUrlLocal ? model.thumbnailUrlLocal : "image://unified-search-result-image/" + model.thumbnailUrl
+                sourceSize.width: visible ? Style.trayWindowHeaderHeight : 0
+                sourceSize.height: visible ? Style.trayWindowHeaderHeight : 0
+                Layout.preferredWidth: visible ? Layout.preferredHeight : 0
+                Layout.preferredHeight: visible ? Style.trayWindowHeaderHeight : 0
             }
+            /*OpacityMask {
+                anchors.fill: unifiedSearchResultThumbnail
+                source: unifiedSearchResultThumbnail.status == Image.Ready ? unifiedSearchResultThumbnail : null
+                maskSource: Rectangle {
+                    width: unifiedSearchResultThumbnail.width
+                    height: unifiedSearchResultThumbnail.height
+                    radius: 25
+                    visible: false // this also needs to be invisible or it will cover up the image
+                }
+            }*/
             Image {
                 id: unifiedSearchResultThumbnailPlaceholder
-                visible: model.thumbnailUrl && unifiedSearchResultThumbnail.status != Image.Ready
+                visible: !model.thumbnailUrlLocal && model.thumbnailUrl && unifiedSearchResultThumbnail.status != Image.Ready
                 Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
                 verticalAlignment: Qt.AlignCenter
-                asynchronous: true
                 cache: true
                 source: "qrc:///client/theme/change.svg"
                 sourceSize.height: Style.trayWindowHeaderHeight
-                sourceSize.width: height
+                sourceSize.width: Style.trayWindowHeaderHeight
+                Layout.preferredWidth: visible ? Layout.preferredHeight : 0
+                Layout.preferredHeight: visible ? Style.trayWindowHeaderHeight : 0
             }
         }
 
-        Column {
+        ColumnLayout {
             id: unifiedSearchResultRightColumn
-            Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
             Layout.fillWidth: true
-            Layout.fillHeight: true
-            Layout.leftMargin: 8
-            Layout.topMargin: 8
-            Layout.bottomMargin: 8
-            spacing: 4
-            ColumnLayout {
-                spacing: 2
-                Rectangle {
-                    Layout.preferredHeight: Style.trayWindowHeaderHeight / 2
-                    Layout.fillWidth: true
 
-                    Text {
-                        id: unifiedSearchResultTitleText
-                        text: model.resultTitle
-                        visible: parent.visible
-                        width: parent.width
-                        font.pixelSize: Style.topLinePixelSize
-                        color: "black"
-                    }
-                }
-                Rectangle {
-                    Layout.preferredHeight: Style.trayWindowHeaderHeight / 2
-                    Layout.fillWidth: true
-                    Text {
-                        id: unifiedSearchResultTextSubline
-                        text: model.subline
-                        visible: parent.visible
-                        width: parent.width
-                        font.pixelSize: Style.subLinePixelSize
-                        color: "grey"
-                    }
-                }
+            TextMetrics {
+                id: textMetricsResultTitle
+                elide: Text.ElideRight
+                elideWidth: 150
+                font.pixelSize: Style.subLinePixelSize
+                text: model.resultTitle
             }
 
-
+            Text {
+                id: unifiedSearchResultTitleText
+                text: textMetricsResultTitle.elidedText
+                visible: parent.visible
+                Layout.fillWidth: true
+                elide: Text.ElideRight
+                font.pixelSize: Style.topLinePixelSize
+                color: "black"
+            }
+            TextMetrics {
+                id: textMetricsSubline
+                elide: Text.ElideRight
+                elideWidth: 150
+                font.pixelSize: Style.subLinePixelSize
+                text: model.subline
+            }
+            Text {
+                id: unifiedSearchResultTextSubline
+                text: textMetricsSubline.elidedText
+                visible: parent.visible
+                Layout.fillWidth: true
+                color: "grey"
+            }
         }
 
     }

@@ -50,6 +50,7 @@ public:
         SublineRole,
         ResourceUrlRole,
         ThumbnailUrlRole,
+        ThumbnailUrlRoleLocal,
         IsFetchMoreTrigger,
         IsCategorySeparator
     };

@@ -50,16 +50,20 @@ UnifiedSearchResultsListModel::UnifiedSearchResultsListModel(AccountState *accou
     _resultsCombined.push_back(fetchMoreFileResultsTrigger);
 
     UnifiedSearchResult talkMessagesCategorySeparator;
-    talkMessagesCategorySeparator._categoryId = "talk_messages";
-    talkMessagesCategorySeparator._categoryName = "Messages";
+    talkMessagesCategorySeparator._categoryId = "comments";
+    talkMessagesCategorySeparator._categoryName = "Comments";
     talkMessagesCategorySeparator._isCategorySeparator = true;
     _resultsCombined.push_back(talkMessagesCategorySeparator);
 
     UnifiedSearchResult fakeTalkMessagesResult;
-    fakeTalkMessagesResult._title = "Fake Talk messages result";
-    fakeTalkMessagesResult._subline = "Long long long Subline for Fake Talk messages result. Long long long Subline for Fake Talk messages result.";
-    fakeTalkMessagesResult._categoryId = "talk_messages";
-    fakeTalkMessagesResult._categoryName = "Messages";
+    fakeTalkMessagesResult._title = "Long/path/subpath/folder/file.md";
+    fakeTalkMessagesResult._subline = R"(
+@kwfw  @khl Long long long Fake file result Long long long Long long long Fake file result Long long long Long long long Fake fil)
+
+Long long long Fake file result Long long long Long long long Fake file result Long long long Long long long Fake fil)";
+    fakeTalkMessagesResult._thumbnailUrl = "https://cloud.nextcloud.com/avatar/lukas/42";
+    fakeTalkMessagesResult._categoryId = "comments";
+    fakeTalkMessagesResult._categoryName = "Comments";
 
     UnifiedSearchResult fetchMoreTalkMessagesTrigger;
     fetchMoreTalkMessagesTrigger._categoryId = "talk_messages";
@@ -98,6 +102,17 @@ QVariant UnifiedSearchResultsListModel::data(const QModelIndex &index, int role)
     case ThumbnailUrlRole: {
         return _resultsCombined.at(index.row())._thumbnailUrl;
     }
+    case ThumbnailUrlRoleLocal: {
+        const auto resulInfo = _resultsCombined.at(index.row());
+
+        if (resulInfo._categoryId.contains("mail")) {
+            return QStringLiteral("qrc:///client/theme/black/email.svg");
+        } else if (resulInfo._categoryId.contains("calendar")) {
+            return QStringLiteral("qrc:///client/theme/account.svg");
+        }
+
+        return QStringLiteral("");
+    }
     case ResourceUrlRole: {
         return _resultsCombined.at(index.row())._resourceUrl;
     }
@@ -126,6 +141,7 @@ QHash<int, QByteArray> UnifiedSearchResultsListModel::roleNames() const
     roles[SublineRole] = "subline";
     roles[ResourceUrlRole] = "resourceUrl";
     roles[ThumbnailUrlRole] = "thumbnailUrl";
+    roles[ThumbnailUrlRoleLocal] = "thumbnailUrlLocal";
     roles[IsFetchMoreTrigger] = "isFetchMoreTrigger";
     roles[IsCategorySeparator] = "isCategorySeparator";
     return roles;
