@@ -47,6 +47,8 @@ private:
     QString _syncStatusStringSynced = tr("All synced!");
     QString _syncStatusStringSyncing = tr("Syncing");
     QString _syncStatusStringError = tr("Some files couldn't be synced!");
+    QString _syncStatusStringWarning = tr("Some files had problems during sync!");
+    QString _syncStatusStringPaused = tr("Sync paused");
 
     QUrl _syncIcon = Theme::instance()->syncStatusOk();
     double _progress = 1.0;

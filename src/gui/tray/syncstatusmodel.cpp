@@ -66,10 +66,18 @@ void SyncStatusModel::onFolderSyncStateChanged(const Folder *folder)
         setSyncStatusString(_syncStatusStringSyncing);
         setSyncIcon(Theme::instance()->syncStatusRunning());
         break;
+    case SyncResult::Paused:
+        setSyncing(false);
+        setSyncStatusString(_syncStatusStringPaused);
+        setSyncIcon(Theme::instance()->syncStatusPause());
+        break;
+    case SyncResult::Problem:
+        setSyncing(false);
+        setSyncString(_syncStatusStringWarning);
+        setSyncIcon(Theme::instance()->syncStatusWarning());
+        break;
     case SyncResult::Undefined:
     case SyncResult::NotYetStarted:
-    case SyncResult::Problem:
-    case SyncResult::Paused:
     case SyncResult::SyncPrepare:
     case SyncResult::SyncAbortRequested:
     case SyncResult::SetupError:

@@ -157,6 +157,10 @@ public:
 
     QUrl syncStatusRunning() const;
 
+    QUrl syncStatusPause() const;
+
+    QUrl syncStatusWarning() const;
+
     /**
      * @brief configFileName
      * @return the name of the config file.
