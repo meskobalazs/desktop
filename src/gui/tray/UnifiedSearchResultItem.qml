@@ -5,12 +5,28 @@ import QtQuick.Layouts 1.2
 import Style 1.0
 import com.nextcloud.desktopclient 1.0
 import QtGraphicalEffects 1.0
+
 MouseArea {
     id: unifiedSearchResultMouseArea
-    enabled: !model.isCategorySeparator
-    hoverEnabled: !model.isCategorySeparator
+
+    property int defaultHeight: 0
+
+    readonly property int contentLeftMargin: 8
+    readonly property int contentRightMargin: contentLeftMargin
+
+    readonly property int typeCategorySeparator: 1
+    readonly property int typeFetchMoreTrigger: 2
+
+    readonly property bool isFetchMoreTrigger: model.type === typeFetchMoreTrigger
+    readonly property bool isCategorySeparator: model.type === typeCategorySeparator
+
+    enabled: !isCategorySeparator
+    hoverEnabled: !isCategorySeparator
+
+    height: !isCategorySeparator ? defaultHeight : defaultHeight/2
     
     Rectangle {
+        id: unifiedSearchResultHoverBackground
         anchors.fill: parent
         color: (parent.containsMouse ? Style.lightHover : "transparent")
     }
@@ -18,13 +34,11 @@ MouseArea {
     RowLayout {
         id: unifiedSearchResultItemDetails
 
-        readonly property int previewThumbnailHeight: unifiedSearchResultMouseArea.height
-
-        visible: !model.isFetchMoreTrigger && !model.isCategorySeparator
+        visible: !isFetchMoreTrigger && !isCategorySeparator
 
         anchors.fill: parent
-        anchors.leftMargin: 8
-        anchors.rightMargin: 8
+        anchors.leftMargin: contentLeftMargin
+        anchors.rightMargin: contentRightMargin
 
         spacing: 0
 
@@ -39,8 +53,6 @@ MouseArea {
             Layout.preferredHeight: visible ? Style.trayWindowHeaderHeight : 0
             Image {
                 id: unifiedSearchResultThumbnail
-                property bool rounded: true
-                    property bool adapt: true
                 visible: !unifiedSearchResultThumbnailPlaceholder.visible
                 Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
                 verticalAlignment: Qt.AlignCenter
@@ -80,33 +92,19 @@ MouseArea {
             id: unifiedSearchResultRightColumn
             Layout.fillWidth: true
 
-            TextMetrics {
-                id: textMetricsResultTitle
-                elide: Text.ElideRight
-                elideWidth: 150
-                font.pixelSize: Style.subLinePixelSize
-                text: model.resultTitle
-            }
-
             Text {
                 id: unifiedSearchResultTitleText
-                text: textMetricsResultTitle.elidedText
+                text: model.resultTitle.replace(/[\r\n]+/g, " ")
                 visible: parent.visible
                 Layout.fillWidth: true
                 elide: Text.ElideRight
                 font.pixelSize: Style.topLinePixelSize
                 color: "black"
             }
-            TextMetrics {
-                id: textMetricsSubline
-                elide: Text.ElideRight
-                elideWidth: 150
-                font.pixelSize: Style.subLinePixelSize
-                text: model.subline
-            }
             Text {
                 id: unifiedSearchResultTextSubline
-                text: textMetricsSubline.elidedText
+                text: model.subline.replace(/[\r\n]+/g, " ")
+                elide: Text.ElideRight
                 visible: parent.visible
                 Layout.fillWidth: true
                 color: "grey"
@@ -117,7 +115,7 @@ MouseArea {
 
     RowLayout {
         id: unifiedSearchResultItemFetchMore
-        visible: model.isFetchMoreTrigger
+        visible: isFetchMoreTrigger
 
         width: visible ? unifiedSearchResultMouseArea.width : 0
         height: visible ? Style.trayWindowHeaderHeight : 0
@@ -128,7 +126,7 @@ MouseArea {
 
         Column {
             id: unifiedSearchResultItemFetchMoreColumn
-            visible: model.isFetchMoreTrigger
+            visible: isFetchMoreTrigger
             Layout.fillWidth: true
             Layout.fillHeight: true
 
@@ -148,11 +146,9 @@ MouseArea {
 
     RowLayout {
         id: unifiedSearchResultItemCategorySeparator
-        visible: model.isCategorySeparator
+        visible: isCategorySeparator
 
         width: visible ? unifiedSearchResultMouseArea.width : 0
-        height: visible ? Style.trayWindowHeaderHeight : 0
-        spacing: 2
 
         Accessible.role: Accessible.ListItem
         Accessible.name: qsTr("Category separator")
@@ -160,21 +156,19 @@ MouseArea {
 
         Column {
             id: unifiedSearchResultItemCategorySeparatorColumn
-            visible: model.isCategorySeparator
-            Layout.leftMargin: 8
-            Layout.topMargin: 4
-            Layout.bottomMargin: 4
+            visible: isCategorySeparator
+            Layout.topMargin: 8
+            Layout.leftMargin: contentLeftMargin
             Layout.fillWidth: true
-            Layout.fillHeight: true
-            spacing: 4
-            Layout.alignment: Qt.AlignLeft
+            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
 
             Text {
                 id: unifiedSearchResultItemCategorySeparatorText
                 text: model.categoryName
                 visible: parent.visible
                 width: parent.width
-                font.pixelSize: Style.topLinePixelSize * 1.5
+                height: parent.height
+                font.pixelSize: Style.topLinePixelSize
                 color: Style.ncBlue
             }
         }

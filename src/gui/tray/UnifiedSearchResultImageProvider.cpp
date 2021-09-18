@@ -50,8 +50,6 @@ public:
     void emitDone(QImage image)
     {
         _image = image;
-        auto width = _image.width();
-        auto height = _image.height();
         emit finished();
     }
 

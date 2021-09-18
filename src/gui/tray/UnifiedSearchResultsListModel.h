@@ -50,9 +50,8 @@ public:
         SublineRole,
         ResourceUrlRole,
         ThumbnailUrlRole,
-        ThumbnailUrlRoleLocal,
-        IsFetchMoreTrigger,
-        IsCategorySeparator
+        ThumbnailUrlLocalRole,
+        TypeRole
     };
 
     explicit UnifiedSearchResultsListModel(AccountState *accountState, QObject *parent = nullptr);
