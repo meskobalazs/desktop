@@ -81,6 +81,7 @@
         <file>theme/colored/state-warning-128.png</file>
         <file>theme/colored/state-warning-256.png</file>
         <file>theme/black/folder.png</file>
+		<file>theme/black/folder.svg</file>
         <file>theme/black/folder@2x.png</file>
         <file>theme/white/folder.png</file>
         <file>theme/white/folder@2x.png</file>
@@ -198,6 +199,8 @@
         <file>theme/colored/user-status-invisible.svg</file>
         <file>theme/colored/user-status-away.svg</file>
         <file>theme/colored/user-status-dnd.svg</file>
-        <file>theme/black/email.svg</file>
+        <file>theme/black/calendar.svg</file>
+		<file>theme/black/deck.svg</file>
+		<file>theme/black/email.svg</file>
     </qresource>
 </RCC>
