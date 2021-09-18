@@ -1,9 +1,7 @@
 import QtQml 2.12
 import QtQuick 2.9
-import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.2
 import Style 1.0
-import com.nextcloud.desktopclient 1.0
 import QtGraphicalEffects 1.0
 
 MouseArea {
@@ -40,15 +38,15 @@ MouseArea {
         anchors.leftMargin: contentLeftMargin
         anchors.rightMargin: contentRightMargin
 
-        spacing: 0
+        spacing: 4
 
         Accessible.role: Accessible.ListItem
         Accessible.name: resultTitle
         Accessible.onPressAction: unifiedSearchResultMouseArea.clicked()
 
         ColumnLayout {
-            id: unifiedSearchResultLeftColumn
-            visible: model.thumbnailUrl || model.thumbnailUrlLocal
+            id: unifiedSearchResultImageContainer
+            visible: model.thumbnailUrl
             Layout.preferredWidth: visible ? Layout.preferredHeight : 0
             Layout.preferredHeight: visible ? Style.trayWindowHeaderHeight : 0
             Image {
@@ -58,25 +56,15 @@ MouseArea {
                 verticalAlignment: Qt.AlignCenter
                 asynchronous: true
                 cache: true
-                source: model.thumbnailUrlLocal ? model.thumbnailUrlLocal : "image://unified-search-result-image/" + model.thumbnailUrl
+                source: "image://unified-search-result-image/" + model.thumbnailUrl
                 sourceSize.width: visible ? Style.trayWindowHeaderHeight : 0
                 sourceSize.height: visible ? Style.trayWindowHeaderHeight : 0
                 Layout.preferredWidth: visible ? Layout.preferredHeight : 0
                 Layout.preferredHeight: visible ? Style.trayWindowHeaderHeight : 0
             }
-            /*OpacityMask {
-                anchors.fill: unifiedSearchResultThumbnail
-                source: unifiedSearchResultThumbnail.status == Image.Ready ? unifiedSearchResultThumbnail : null
-                maskSource: Rectangle {
-                    width: unifiedSearchResultThumbnail.width
-                    height: unifiedSearchResultThumbnail.height
-                    radius: 25
-                    visible: false // this also needs to be invisible or it will cover up the image
-                }
-            }*/
             Image {
                 id: unifiedSearchResultThumbnailPlaceholder
-                visible: !model.thumbnailUrlLocal && model.thumbnailUrl && unifiedSearchResultThumbnail.status != Image.Ready
+                visible: model.thumbnailUrl && unifiedSearchResultThumbnail.status != Image.Ready
                 Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
                 verticalAlignment: Qt.AlignCenter
                 cache: true
@@ -89,7 +77,7 @@ MouseArea {
         }
 
         ColumnLayout {
-            id: unifiedSearchResultRightColumn
+            id: unifiedSearchResultTextContainer
             Layout.fillWidth: true
 
             Text {

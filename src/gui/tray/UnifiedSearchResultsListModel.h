@@ -50,7 +50,6 @@ public:
         SublineRole,
         ResourceUrlRole,
         ThumbnailUrlRole,
-        ThumbnailUrlLocalRole,
         TypeRole
     };
 

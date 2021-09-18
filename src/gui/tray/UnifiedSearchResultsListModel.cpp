@@ -100,18 +100,14 @@ QVariant UnifiedSearchResultsListModel::data(const QModelIndex &index, int role)
         return _resultsCombined.at(index.row())._subline;
     }
     case ThumbnailUrlRole: {
-        return _resultsCombined.at(index.row())._thumbnailUrl;
-    }
-    case ThumbnailUrlLocalRole: {
         const auto resulInfo = _resultsCombined.at(index.row());
-
         if (resulInfo._categoryId.contains("mail")) {
-            return QStringLiteral("qrc:///client/theme/black/email.svg");
+            return QStringLiteral(":/client/theme/black/email.svg");
         } else if (resulInfo._categoryId.contains("calendar")) {
-            return QStringLiteral("qrc:///client/theme/account.svg");
+            return QStringLiteral(":/client/theme/account.svg");
         }
 
-        return QStringLiteral("");
+        return resulInfo._thumbnailUrl;
     }
     case ResourceUrlRole: {
         return _resultsCombined.at(index.row())._resourceUrl;
@@ -138,7 +134,6 @@ QHash<int, QByteArray> UnifiedSearchResultsListModel::roleNames() const
     roles[SublineRole] = "subline";
     roles[ResourceUrlRole] = "resourceUrl";
     roles[ThumbnailUrlRole] = "thumbnailUrl";
-    roles[ThumbnailUrlLocalRole] = "thumbnailUrlLocal";
     roles[TypeRole] = "type";
     return roles;
 }

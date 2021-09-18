@@ -30,18 +30,23 @@ public:
         const QUrl iconUrl = QUrl(id);
 
         if (!iconUrl.isValid() || iconUrl.scheme().isEmpty()) {
+            if (!id.isEmpty()) {
+                emitDone(QIcon(id).pixmap(requestedSize).toImage());
+                return;
+            }
+
             emitDone(QImage());
             return;
         }
 
-        auto curetAccount = UserModel::instance()->currentUser()->account();
+        auto currentAccount = UserModel::instance()->currentUser()->account();
 
-        if (!curetAccount) {
+        if (!currentAccount) {
             emitDone(QImage());
             return;
         }
 
-        auto reply = curetAccount->sendRawRequest("GET", iconUrl);
+        auto reply = currentAccount->sendRawRequest("GET", iconUrl);
         connect(reply, &QNetworkReply::finished, this, [this, reply]() {
             emitDone(QImage::fromData(reply->readAll()));
         });
