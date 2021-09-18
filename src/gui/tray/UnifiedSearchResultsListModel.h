@@ -70,6 +70,8 @@ protected:
 private slots:
     void slotSearchTermEditingFinished();
 
+    void slotSearchForProviderFinished(const QJsonDocument &json);
+
 private:
     void startSearch();
     void startSearchForProvider(const UnifiedSearchProvider &provider, qint32 cursor = -1);
@@ -83,6 +85,8 @@ private:
     AccountState *_accountState;
     QMap<QString, UnifiedSearchResultCategory> _resultsByCategory;
     QList<UnifiedSearchResult> _resultsCombined;
+
+    QList<QMetaObject::Connection> _searchJobConnections;
 };
 }
 

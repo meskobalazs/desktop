@@ -76,8 +76,6 @@ Long long long Fake file result Long long long Long long long Fake file result L
 
 UnifiedSearchResultsListModel::~UnifiedSearchResultsListModel()
 {
-    int a = 5;
-    a = 6;
 }
 
 QVariant UnifiedSearchResultsListModel::data(const QModelIndex &index, int role) const
@@ -170,6 +168,14 @@ void UnifiedSearchResultsListModel::setSearchTerm(const QString &term)
         connect(&_unifiedSearchTextEditingFinishedTimer, &QTimer::timeout, this, &UnifiedSearchResultsListModel::slotSearchTermEditingFinished);
         _unifiedSearchTextEditingFinishedTimer.start();
     } else {
+        for (auto& connection : _searchJobConnections) {
+            if (connection) {
+                QObject::disconnect(connection);
+            }
+        }
+
+        _searchJobConnections.clear();
+
         beginResetModel();
         _resultsByCategory.clear();
         _resultsCombined.clear();
@@ -244,8 +250,56 @@ void UnifiedSearchResultsListModel::slotSearchTermEditingFinished()
     }
 }
 
+void UnifiedSearchResultsListModel::slotSearchForProviderFinished(const QJsonDocument &json)
+{
+    if (searchTerm().isEmpty()) {
+        return;
+    }
+
+    const auto data = json.object().value("ocs").toObject().value("data").toObject();
+    if (!data.isEmpty()) {
+        const auto dataMap = data.toVariantMap();
+        const auto name = data.value("name").toString();
+        const auto providerForResults = _providers.find(name);
+        const auto isPaginated = data.value("isPaginated").toBool();
+        const auto cursor = data.value("cursor").toInt();
+        const auto entries = data.value("entries").toVariant().toList();
+
+        if (providerForResults != _providers.end() && !entries.isEmpty()) {
+            UnifiedSearchResultCategory &category = _resultsByCategory[(*providerForResults)._id];
+
+            category._id = (*providerForResults)._id;
+            category._name = (*providerForResults)._name;
+            category._order = (*providerForResults)._order;
+            category._isPaginated = isPaginated;
+            category._cursor = cursor;
+
+            for (const auto &entry : entries) {
+                UnifiedSearchResult result;
+                result._categoryId = category._id;
+                result._categoryName = category._name;
+                result._icon = entry.toMap()["icon"].toString();
+                result._order = category._order;
+                result._title = entry.toMap()["title"].toString();
+                result._subline = entry.toMap()["subline"].toString();
+                result._resourceUrl = entry.toMap()["resourceUrl"].toString();
+                result._thumbnailUrl = entry.toMap()["thumbnailUrl"].toString();
+                category._results.push_back(result);
+            }
+
+            combineResults();
+        }
+    }
+}
+
 void UnifiedSearchResultsListModel::startSearch()
 {
+    for (auto &connection : _searchJobConnections) {
+        if (connection) {
+            QObject::disconnect(connection);
+        }
+    }
+
     beginResetModel();
     _resultsByCategory.clear();
     _resultsCombined.clear();
@@ -265,42 +319,7 @@ void UnifiedSearchResultsListModel::startSearchForProvider(const UnifiedSearchPr
         params.addQueryItem("cursor", QString::number(cursor));
     }
     job->addQueryParams(params);
-    QObject::connect(job, &JsonApiJob::jsonReceived, [&, provider](const QJsonDocument &json) {
-        const auto data = json.object().value("ocs").toObject().value("data").toObject();
-        if (!data.isEmpty()) {
-            const auto dataMap = data.toVariantMap();
-            const auto name = data.value("name").toString();
-            const auto providerForResults = _providers.find(name);
-            const auto isPaginated = data.value("isPaginated").toBool();
-            const auto cursor = data.value("cursor").toInt();
-            const auto entries = data.value("entries").toVariant().toList();
-
-            if (providerForResults != _providers.end() && !entries.isEmpty()) {
-                UnifiedSearchResultCategory &category = _resultsByCategory[(*providerForResults)._id];
-
-                category._id = (*providerForResults)._id;
-                category._name = (*providerForResults)._name;
-                category._order = (*providerForResults)._order;
-                category._isPaginated = isPaginated;
-                category._cursor = cursor;
-
-                for (const auto &entry : entries) {
-                    UnifiedSearchResult result;
-                    result._categoryId = category._id;
-                    result._categoryName = category._name;
-                    result._icon = entry.toMap()["icon"].toString();
-                    result._order = category._order;
-                    result._title = entry.toMap()["title"].toString();
-                    result._subline = entry.toMap()["subline"].toString();
-                    result._resourceUrl = entry.toMap()["resourceUrl"].toString();
-                    result._thumbnailUrl = entry.toMap()["thumbnailUrl"].toString();
-                    category._results.push_back(result);
-                }
-
-                combineResults();
-            }
-        }
-    });
+    _searchJobConnections.push_back(QObject::connect(job, &JsonApiJob::jsonReceived, this, &UnifiedSearchResultsListModel::slotSearchForProviderFinished));
     job->start();
 }
 void UnifiedSearchResultsListModel::combineResults()
